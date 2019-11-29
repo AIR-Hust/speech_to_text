@@ -54,7 +54,7 @@ def rotate_angle(d):
         rospy.sleep(rate)
         b = b + 1
         print(b*rate)
-        pub.publish(stop)
+        #pub.publish(stop)
 
     c = 0
     while (c>t):
@@ -65,7 +65,8 @@ def rotate_angle(d):
         rospy.sleep(rate)
         c = c - 1
         print(c*rate)
-        pub.publish(stop)
+    pub.publish(stop)
+
 
 # Ham callback khi nhan duoc tin hieu huong am thanh
 def sound_direction_callback(data):
