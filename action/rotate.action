@@ -1,0 +1,8 @@
+#goal definition
+float32 direction
+---
+#result definition
+bool finish
+---
+#feedback
+float32 angle
