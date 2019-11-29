@@ -94,7 +94,7 @@ def s2t_callback(data):
 # Chuong trinh chinh
 if __name__ == "__main__":
     rospy.init_node('rotate_voice')
-    pub = rospy.Publisher('/mobile_base/commands/velocity', Twist, queue_size=5)
+    pub = rospy.Publisher('/mobile_base/commands/velocity', Twist, queue_size=1)
     sub = rospy.Subscriber('/speech_to_text', SpeechRecognitionCandidates, s2t_callback)
     sub = rospy.Subscriber('/sound_direction', Int32, sound_direction_callback)
  
