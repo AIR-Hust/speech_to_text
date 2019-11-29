@@ -21,7 +21,7 @@ def d2r(deg):
     print(rad)
     return rad
 
-omega = 10*d2r(1)
+omega = d2r(30)
 
 # Msg dung robot
 stop = Twist()
@@ -53,7 +53,7 @@ def rotate_angle(d):
         pub.publish(rotate)
         rospy.sleep(rate)
         b = b + 1
-        print(b*rate)
+        print(b*rate*omega/d2r(1))
         #pub.publish(stop)
 
     c = 0
@@ -64,7 +64,7 @@ def rotate_angle(d):
         pub.publish(rotate)
         rospy.sleep(rate)
         c = c - 1
-        print(c*rate)
+        print(c*rate*omega/d2r(1))
     pub.publish(stop)
 
 
