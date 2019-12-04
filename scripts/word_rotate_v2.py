@@ -7,15 +7,15 @@ import math # thu vien cac phep toan cho python
 from std_msgs.msg import Int32 # loai msg Int32
 
 from geometry_msgs.msg import Twist # message dieu khien robot
-from nav_msgs.msg import Odometry
+from nav_msgs.msg import Odometry # msg of Odom topic
 
-# msg ket qua speech to text
+# msg result of speech to text
 from speech_recognition_msgs.msg import SpeechRecognitionCandidates
 
 new_message = False # co soat message
 
 d = 0 # goc quay can thiet robot
-odom = []
+odom = [] # Roll pitch yaw at realtime
 
 # convert degree to radian
 def d2r(deg):
@@ -23,7 +23,7 @@ def d2r(deg):
     print(rad)
     return rad
 
-omega = d2r(30)
+omega = d2r(30) # Toc do goc quay robot
 
 # Function to convert quaternion to euler
 def quaternion_to_euler(x, y, z, w):
@@ -45,7 +45,7 @@ stop = Twist()
 stop.linear.x = 0; stop.linear.y = 0 ; stop.linear.z = 0
 stop.angular.x = 0; stop.angular.y = 0; stop.angular.z = 0
 
-# Msg quay voi toc do goc 5 deg/s
+# Msg quay voi toc do goc 30 deg/s
 rotate = Twist()
 rotate.linear.x = 0; rotate.linear.y = 0 ; rotate.linear.z = 0
 rotate.angular.x = 0; rotate.angular.y = 0
@@ -61,75 +61,62 @@ def odom_callback(data):
     orien_z = data.pose.pose.orientation.z
     orien_w = data.pose.pose.orientation.w
     odom = quaternion_to_euler(orien_x, orien_y, orien_z, orien_w)
-    #print(odom)
-    #print(odom[2])
 
 # Ham quay mot goc d degree
 def rotate_angle(d):
     global new_message
-    print(rotate.angular.z)
+    #print(rotate.angular.z)
     print(d)
-    odom_goal = d2r(d) + odom[2]
+    odom_goal = d2r(d) + odom[2] # The goal angle
     print(odom[2])
     print('goal: ')
     print(odom_goal)
+
+    # First case
     if (odom_goal > math.pi) & (d > 0):
         odom_goal = odom_goal - 2*math.pi
         print('recal')
         print(odom_goal)
         while (odom[2] < math.pi) & (odom[2] > 0):
-            rotate.angular.z = omega # 10*d2r(1)
-            print('b') 
+            rotate.angular.z = omega
+            print('cw') 
             pub.publish(rotate)
             rospy.sleep(rate)
         while (odom[2] > -math.pi) & (odom_goal > odom[2]):
             rotate.angular.z = omega
-            print('b')  
+            print('cw')  
             pub.publish(rotate)
             rospy.sleep(rate)
 
+    # Second case
     if (odom_goal < -math.pi) & (d<0):
         odom_goal = odom_goal + 2*math.pi
         print("recalculate")
         print(odom_goal)
         while (odom[2] > -math.pi) & (odom[2] < 0):
-            rotate.angular.z = -omega #10*d2r(-1)
-            print('c')
-            #print(rotate.angular.z)   
+            rotate.angular.z = -omega 
+            print('ccw')  
             pub.publish(rotate)
             rospy.sleep(rate)
         while (odom[2] < math.pi) & (odom_goal < odom[2]):
             rotate.angular.z = -omega
-            print('c')  
+            print('ccw')  
             pub.publish(rotate)
             rospy.sleep(rate)
-            #pass
 
-
-    #print("so lan quay")
-    #print(t)
-    #new_message = False
-    b = 0
     if d>0:
         while (odom[2] < odom_goal):
-            rotate.angular.z = omega # 10*d2r(1)
-            print('b') 
+            rotate.angular.z = omega 
+            print('cw') 
             pub.publish(rotate)
             rospy.sleep(rate)
-            #b = b + 1
-            #print(b*rate*omega/d2r(1))
-            #pub.publish(stop)
 
-    c = 0
     if d<0:
         while (odom[2] > odom_goal):
-            rotate.angular.z = -omega #10*d2r(-1)
-            print('c')
-            #print(rotate.angular.z)   
+            rotate.angular.z = -omega 
+            print('ccw') 
             pub.publish(rotate)
             rospy.sleep(rate)
-            #c = c - 1
-            #print(c*rate*omega/d2r(1))
     print("Final: ")
     print(odom[2])
     pub.publish(stop)
@@ -140,7 +127,7 @@ def sound_direction_callback(data):
     global d
     global new_message
     if new_message == False:
-        d = -float(data.data)
+        d = -float(data.data) # Do goc microphone array nguoc chieu voi goc odom
         print(data)
     
 
@@ -149,7 +136,7 @@ def s2t_callback(data):
     global new_message 
     new_message = True
     print(data)
-    if data.transcript == ['hi']:
+    if data.transcript == ['hi']: # 'hi' is the wake up word
         print(d)
         rotate_angle(d)
         print('tests2t')
