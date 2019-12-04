@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>speech_to_text</name>
+  <name>speech_rotate</name>
   <version>0.0.0</version>
   <description>The speech_to_text package</description>
 

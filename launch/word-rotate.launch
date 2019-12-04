@@ -20,5 +20,5 @@
     <include file="$(find kobuki_auto_docking)/launch/minimal.launch"/>
 
   <!-- Rotate to the source of the audio-->
-  <node name="word_rotate" pkg="speech_to_text" type="word_rotate_v2.py"/>
+  <node name="word_rotate" pkg="speech_rotate" type="word_rotate_v2.py"/>
 </launch>
