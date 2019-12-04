@@ -15,7 +15,7 @@ from speech_recognition_msgs.msg import SpeechRecognitionCandidates
 new_message = False # co soat message
 
 d = 0 # goc quay can thiet robot
-odom_z = 0
+odom = []
 
 # convert degree to radian
 def d2r(deg):
@@ -38,7 +38,7 @@ def quaternion_to_euler(x, y, z, w):
     t3 = +2.0 * (w * z + x * y)
     t4 = +1.0 - 2.0 * (y * y + z * z)
     yaw = math.atan2(t3, t4)
-    return [yaw, pitch, roll]
+    return [roll, pitch, yaw]
 
 # Msg dung robot
 stop = Twist()
@@ -55,7 +55,14 @@ rate = 0.1 # tan so gui lenh Twist
 
 # Ham odom callback
 def odom_callback(data):
-    odom = quaternion_to_euler(data.pose.pose.orientation)
+    global odom
+    orien_x = data.pose.pose.orientation.x
+    orien_y = data.pose.pose.orientation.y
+    orien_z = data.pose.pose.orientation.z
+    orien_w = data.pose.pose.orientation.w
+    odom = quaternion_to_euler(orien_x, orien_y, orien_z, orien_w)
+    #print(odom)
+    #print(odom[2])
 
 # Ham quay mot goc d degree
 def rotate_angle(d):
@@ -63,17 +70,49 @@ def rotate_angle(d):
     print(rotate.angular.z)
     #print(rate)
     print(d)
-    odom_goal = d2r(d) + odom[roll]
-    #if odom_goal > math.pi:
-     #   odom_goal = odom_goal - 2*math.pi
+    odom_goal = d2r(d) + odom[2]
+    print(odom[2])
+    print('goal: ')
+    print(odom_goal)
+    if (odom_goal > math.pi) & (d > 0):
+        odom_goal = odom_goal - 2*math.pi
+        print('recal')
+        print(odom_goal)
+        while (odom[2] < math.pi) & (odom[2] > 0):
+            rotate.angular.z = -omega # 10*d2r(1)
+            print('b') 
+            pub.publish(rotate)
+            rospy.sleep(rate)
+        while (odom[2] > -math.pi) & (odom_goal > odom[2]):
+            otate.angular.z = -omega
+            print('b')  
+            pub.publish(rotate)
+            rospy.sleep(rate)
+
+    if (odom_goal < -math.pi) & (d<0):
+        odom_goal = odom_goal + 2*math.pi
+        print("recalculate")
+        print(odom_goal)
+        while (odom[2] > -math.pi) & (odom[2] < 0):
+            rotate.angular.z = omega #10*d2r(-1)
+            print('c')
+            #print(rotate.angular.z)   
+            pub.publish(rotate)
+            rospy.sleep(rate)
+        while (odom[2] < math.pi) & (odom_goal < odom[2]):
+            otate.angular.z = omega
+            print('c')  
+            pub.publish(rotate)
+            rospy.sleep(rate)
+            #pass
 
 
-    print("so lan quay")
-    print(t)
+    #print("so lan quay")
+    #print(t)
     new_message = False
     b = 0
     if d>0:
-        while (odom[roll] < odom_goal):
+        while (odom[2] < odom_goal):
             rotate.angular.z = - omega # 10*d2r(1)
             print('b') 
             pub.publish(rotate)
@@ -84,14 +123,14 @@ def rotate_angle(d):
 
     c = 0
     if d<0:
-        while (odom[roll] > odom_goal):
+        while (odom[2] > odom_goal):
             rotate.angular.z = omega #10*d2r(-1)
             print('c')
             #print(rotate.angular.z)   
             pub.publish(rotate)
             rospy.sleep(rate)
             #c = c - 1
-            print(c*rate*omega/d2r(1))
+            #print(c*rate*omega/d2r(1))
     pub.publish(stop)
 
 
