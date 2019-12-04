@@ -68,7 +68,6 @@ def odom_callback(data):
 def rotate_angle(d):
     global new_message
     print(rotate.angular.z)
-    #print(rate)
     print(d)
     odom_goal = d2r(d) + odom[2]
     print(odom[2])
@@ -79,12 +78,12 @@ def rotate_angle(d):
         print('recal')
         print(odom_goal)
         while (odom[2] < math.pi) & (odom[2] > 0):
-            rotate.angular.z = -omega # 10*d2r(1)
+            rotate.angular.z = omega # 10*d2r(1)
             print('b') 
             pub.publish(rotate)
             rospy.sleep(rate)
         while (odom[2] > -math.pi) & (odom_goal > odom[2]):
-            otate.angular.z = -omega
+            rotate.angular.z = omega
             print('b')  
             pub.publish(rotate)
             rospy.sleep(rate)
@@ -94,13 +93,13 @@ def rotate_angle(d):
         print("recalculate")
         print(odom_goal)
         while (odom[2] > -math.pi) & (odom[2] < 0):
-            rotate.angular.z = omega #10*d2r(-1)
+            rotate.angular.z = -omega #10*d2r(-1)
             print('c')
             #print(rotate.angular.z)   
             pub.publish(rotate)
             rospy.sleep(rate)
         while (odom[2] < math.pi) & (odom_goal < odom[2]):
-            otate.angular.z = omega
+            rotate.angular.z = -omega
             print('c')  
             pub.publish(rotate)
             rospy.sleep(rate)
@@ -109,11 +108,11 @@ def rotate_angle(d):
 
     #print("so lan quay")
     #print(t)
-    new_message = False
+    #new_message = False
     b = 0
     if d>0:
         while (odom[2] < odom_goal):
-            rotate.angular.z = - omega # 10*d2r(1)
+            rotate.angular.z = omega # 10*d2r(1)
             print('b') 
             pub.publish(rotate)
             rospy.sleep(rate)
@@ -124,13 +123,15 @@ def rotate_angle(d):
     c = 0
     if d<0:
         while (odom[2] > odom_goal):
-            rotate.angular.z = omega #10*d2r(-1)
+            rotate.angular.z = -omega #10*d2r(-1)
             print('c')
             #print(rotate.angular.z)   
             pub.publish(rotate)
             rospy.sleep(rate)
             #c = c - 1
             #print(c*rate*omega/d2r(1))
+    print("Final: ")
+    print(odom[2])
     pub.publish(stop)
 
 
@@ -139,7 +140,7 @@ def sound_direction_callback(data):
     global d
     global new_message
     if new_message == False:
-        d = float(data.data)
+        d = -float(data.data)
         print(data)
     
 
