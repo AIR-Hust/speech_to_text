@@ -1,0 +1,24 @@
+<launch>
+
+  <!-- respeaker_ros -->
+  <include file="$(find respeaker_ros)/launch/en-respeaker.launch"/>
+
+  <!-- Turtlebot -->
+  <include file="$(find turtlebot_gazebo)/launch/turtlebot_world.launch"/>
+
+  <!-- rplidarnode -->
+  <include file="$(find rplidar_ros)/launch/rplidar.launch"/>
+
+  <!-- amcl without 3D sensor-->
+    <!--include file="$(find robot)/launch/amcl_no3Dsensor.launch">
+        <arg name="map_file" default="/home/cist/maps/cistmar12.yaml"/>
+    </include-->
+
+<!-- Transform -->
+    <node pkg="tf" type="static_transform_publisher" name="laser_frame_transform" args="0 0 0.24 -1.57 0 0 base_link laser_frame 50"/>
+   <!--  <node pkg="tf" type="static_transform_publisher" name="map_odom_transform" args="0 0 0 0 0 0 map odom  50" /> -->
+    <include file="$(find kobuki_auto_docking)/launch/minimal.launch"/>
+
+  <!-- Rotate to the source of the audio-->
+  <node name="word_rotate" pkg="speech_to_text" type="word_rotate_v2.py"/>
+</launch>
