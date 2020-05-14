@@ -121,7 +121,6 @@ def rotate_angle(d):
     print(odom[2])
     pub.publish(stop)
 
-
 # Ham callback khi nhan duoc tin hieu huong am thanh
 def sound_direction_callback(data):
     global d
@@ -141,9 +140,6 @@ def s2t_callback(data):
         rotate_angle(d)
         print('tests2t')
     new_message = False
-
-
-    
 
 # Chuong trinh chinh
 if __name__ == "__main__":

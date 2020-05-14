@@ -1,7 +1,7 @@
 <launch>
 
   <!-- respeaker_ros -->
-  <include file="$(find respeaker_ros)/launch/en-respeaker.launch"/>
+  <include file="$(find respeaker_ros)/launch/vn-respeaker.launch"/>
 
   <!-- Turtlebot -->
   <include file="$(find turtlebot_gazebo)/launch/turtlebot_world.launch"/>
